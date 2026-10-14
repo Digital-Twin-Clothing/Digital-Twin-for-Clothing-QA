@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens — monochrome, no gradients.
+   Each token also becomes a Tailwind utility (bg-bg, text-ink,
+   border-line, font-serif, ease-smooth, ease-snap …).
+------------------------------------------------------------------- */
+@theme {
+  --color-bg: #f3f1ec;
+  --color-card: #faf9f6;
+  --color-ink: #141414;
+  --color-mute: #6e6c66;
+  --color-line: #d9d6ce;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+
+  /* smooth = reveals & scenes (luxury feel), snap = buttons & controls */
+  --ease-smooth: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  --pad: 6vw;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+/* ------------------------------------------------------------------
+   Motion components
+------------------------------------------------------------------- */
+@layer components {
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+
+  /* -- Buttons: label roll on hover, press scale, ripple on click -- */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 15px;
+    border: 1px solid var(--color-ink);
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-snap);
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--color-ink); color: var(--color-bg); }
+  .btn-sm { height: 38px; padding: 0 16px; font-size: 14px; }
+
+  .lbl {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    height: 1.3em;
+    line-height: 1.3em;
+  }
+  .lbl > span { display: block; transition: transform 0.45s var(--ease-smooth); }
+  .lbl::after {
+    content: attr(data-t);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    transition: transform 0.45s var(--ease-smooth);
+  }
+  .btn:hover .lbl > span,
+  .btn:hover .lbl::after { transform: translateY(-100%); }
+
+  .arrow { display: inline-block; transition: transform 0.35s var(--ease-snap); }
+  a:hover .arrow,
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.22;
+    transform: scale(0);
+    pointer-events: none;
+    animation: ripple 0.65s var(--ease-smooth) forwards;
+  }
+
+  .magnetic { transition: transform 0.5s var(--ease-snap); }
+
+  /* -- Nav link underline sweep -- */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s var(--ease-smooth);
+  }
+  .nav-link:hover { color: var(--color-ink); }
+  .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  .logo-dot {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+  }
+  .logo-dot::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: var(--color-ink);
+    border-radius: 50%;
+    animation: blink 2.4s var(--ease-smooth) infinite;
+  }
+
+  /* -- Reveal system -- */
+  .line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+  .line > span {
+    display: inline-block;
+    transform: translateY(105%);
+    transition: transform 1.1s var(--ease-smooth);
+    transition-delay: var(--d, 0s);
+  }
+  .in .line > span { transform: none; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s var(--ease-smooth), transform 0.9s var(--ease-smooth);
+    transition-delay: var(--d, 0s);
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* -- Hero figure -- */
+  .float { animation: float 6s ease-in-out infinite; }
+  .scan { animation: scan 3.6s var(--ease-smooth) infinite; }
+  .tag { opacity: 0; transition: opacity 0.8s var(--ease-smooth); transition-delay: var(--d); }
+  .tag line {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    transition: stroke-dashoffset 1s var(--ease-smooth);
+    transition-delay: var(--d);
+  }
+  .tag line.ruler { stroke-dasharray: 360; stroke-dashoffset: 360; }
+  .in .tag { opacity: 1; }
+  .in .tag line { stroke-dashoffset: 0; }
+
+  /* -- Marquee -- */
+  .marquee-track { display: flex; gap: 48px; width: max-content; animation: marquee 28s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  .marquee-track span::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--color-ink);
+    border-radius: 50%;
+  }
+
+  /* -- Scrollytelling -- */
+  .stage {
+    position: sticky;
+    top: 12vh;
+    height: 76vh;
+  }
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    transition: opacity 0.6s var(--ease-smooth), transform 0.9s var(--ease-smooth);
+    pointer-events: none;
+  }
+  .scene.on { opacity: 1; transform: none; }
+  .scene > svg { height: 80%; width: auto; overflow: visible; }
+
+  .photo {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+    transition-delay: var(--d);
+  }
+  .scene.on .photo { opacity: 1; transform: none; }
+
+  .joint {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 1.8s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  .bone { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s var(--ease-smooth); }
+  .scene.on .bone { stroke-dashoffset: 0; }
+
+  .step { opacity: 0.28; transition: opacity 0.6s var(--ease-smooth); }
+  .step.active { opacity: 1; }
+
+  .roll-in { display: inline-block; animation: roll-in 0.5s var(--ease-smooth); }
+
+  /* -- Fit panel -- */
+  .pill { transition: transform 0.5s var(--ease-snap); }
+  .fit-dot { transition: left 0.7s var(--ease-snap); }
+  .shirt { transform-box: fill-box; transform-origin: 50% 30%; transition: transform 0.7s var(--ease-snap); }
+  .fade-up { animation: fade-up 0.4s var(--ease-smooth); }
+
+  /* -- Garment cards: outline redraws on hover -- */
+  .garment-card { transition: transform 0.5s var(--ease-smooth), border-color 0.3s; }
+  .garment-card:hover { transform: translateY(-6px); border-color: var(--color-ink); }
+  .garment-art path {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  .garment-card:hover .garment-art path { animation: draw 1.2s var(--ease-smooth); }
+}
+
+/* ------------------------------------------------------------------
+   Keyframes
+------------------------------------------------------------------- */
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+@keyframes blink { 50% { transform: scale(0.3); } }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes scan { from { transform: translateY(0); } to { transform: translateY(392px); } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes pulse { 50% { transform: scale(1.6); } }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes roll-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ------------------------------------------------------------------
+   Mobile: sticky stage sits on top of the scrolling steps
+------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .stage { top: 72px; height: 46vh; z-index: 5; }
+}
+
+/* ------------------------------------------------------------------
+   Respect reduced-motion settings
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .line > span, .reveal, .tag, .photo { transform: none !important; opacity: 1 !important; }
+  .tag line { stroke-dashoffset: 0 !important; }
+}
