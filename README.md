@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 # Digital-Twin-for-Clothing-QA
-=======
-# Digital Twins
 
 **Digital Twins** is an interactive 3D virtual fitting room for the web. Users create a personalized 3D avatar from four photos (front, back, side and T-pose side), then try on digital garments in a 360° viewer. The app checks how each garment fits their body and recommends a size before they buy.
 
@@ -52,3 +49,7 @@ docker run --rm -p 8080:8080 \
 
 For Google Cloud Build, use the repository root (`.`) as the build context and the root-level `Dockerfile`. When deploying to Cloud Run, provide `AUTH_SECRET` as a runtime environment variable or Secret Manager secret. Cloud Run sets `PORT` for the container automatically.
 >>>>>>> dev/main
+
+## Purpose
+
+This repo is strictly for QA/testing purposes.
