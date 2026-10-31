@@ -1,0 +1,174 @@
+"use client";
+
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+      } else {
+        router.push("/");
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        {/* Logo/Brand */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-serif text-ink mb-2">
+            Welcome back
+          </h1>
+          <p className="text-mute text-sm">
+            Sign in to your digital twin account
+          </p>
+        </div>
+
+        {/* Login Form */}
+        <div className="bg-card border border-line rounded-2xl p-8 shadow-sm">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email Field */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-ink mb-2"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-bg border border-line rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-ink transition-all"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-ink mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                className="w-full px-4 py-3 bg-bg border border-line rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-ink transition-all"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full btn btn-primary justify-center"
+            >
+              {loading ? (
+                <span className="lbl" data-t="Signing in...">
+                  <span>Signing in...</span>
+                </span>
+              ) : (
+                <span className="lbl" data-t="Sign in">
+                  <span>Sign in</span>
+                </span>
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-line"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-card text-mute">or</span>
+            </div>
+          </div>
+
+          {/* Social Login Buttons (Optional - uncomment when configured) */}
+          {/* <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => signIn("google")}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-line rounded-lg hover:bg-bg transition-colors"
+            >
+              <span className="text-ink">Continue with Google</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => signIn("github")}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-line rounded-lg hover:bg-bg transition-colors"
+            >
+              <span className="text-ink">Continue with GitHub</span>
+            </button>
+          </div> */}
+
+          {/* Sign Up Link */}
+          <div className="mt-6 text-center text-sm">
+            <span className="text-mute">Don't have an account? </span>
+            <Link
+              href="/signup"
+              className="text-ink font-medium hover:underline"
+            >
+              Sign up
+            </Link>
+          </div>
+        </div>
+
+        {/* Back to Home */}
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-mute hover:text-ink transition-colors">
+            ← Back to home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
